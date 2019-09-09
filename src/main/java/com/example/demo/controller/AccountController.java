@@ -19,12 +19,12 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
     
-    @CrossOrigin
-    // @RequestMapping("/saveAccount")
-    @PostMapping("/saveAccount")
-    public ResponseEntity<?> saveAccount(@RequestBody LoginRequest loginRequest) {
-        accountService.saveAccount(loginRequest);
-        return ResponseEntity.ok("");
-    }
+    // @CrossOrigin
+    // // @RequestMapping("/saveAccount")
+    // @PostMapping("/saveAccount")
+    // public ResponseEntity<?> saveAccount(@RequestBody LoginRequest loginRequest) {
+    //     accountService.saveAccount(loginRequest);
+    //     return ResponseEntity.ok("");
+    // }
 
 }

@@ -1,9 +1,22 @@
+server:
+    port: 8080
+
 spring:
     h2:
         console:
             enabled: true
+    jackson:
+        time-zone: UTC
+        serialization:
+            WRITE_DATES_AS_TIMESTAMPS: false
+        
 logging:
     level:
         org:
             hibernate:
                 SQL: debug
+            springframework:
+                security: debug
+app:
+    jwtSecret: JWTSuperSecretKey
+    jwtExpirationInMs: 604800000
