@@ -9,7 +9,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Account;
+import com.example.demo.model.Profile;
+import com.example.demo.payload.ProfilePayload;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.ProfileRepository;
 import com.example.demo.security.AccountPrincipal;
 
 @Service
@@ -17,6 +20,9 @@ public class AccountService implements UserDetailsService {
 
         @Autowired
         private AccountRepository accountRepository;
+
+        @Autowired
+        private ProfileRepository profileRepository;
 
         @Override
         @Transactional
@@ -40,4 +46,35 @@ public class AccountService implements UserDetailsService {
 
                 return AccountPrincipal.create(account);
         }
+        
+        public Account editProfile(ProfilePayload profilePayload) {
+                Account account = accountRepository.findByEmail(profilePayload.getEmail())
+                                .orElseThrow(() -> new UsernameNotFoundException(
+                                                "Account not found with email : " + profilePayload.getEmail()));
+                Profile profile = new Profile();
+                if (profileRepository.existsByAccountId(account.getId())) {
+                        profile = profileRepository.findByAccountId(account.getId())
+                                        .orElseThrow(() -> new UsernameNotFoundException(
+                                                        "Profile not found with id : " + account.getId()));
+                }
+
+                profile.setName(profilePayload.getName());
+                profile.setBio(profilePayload.getBio());
+                profile.setCompany(profilePayload.getCompany());
+                profile.setAddress(profilePayload.getAddress());
+
+                account.setProfile(profile);
+                profile.setAccount(account);
+
+                return accountRepository.save(account);
+        }
+
+        public Profile loadProfile(String email) {
+                Account account = accountRepository.findByEmail(email).orElseThrow(
+                                () -> new UsernameNotFoundException("Account not found with email : " + email));
+                Profile profile = account.getProfile();
+
+                return profile;
+        }
+
 }
