@@ -22,7 +22,13 @@ spring:
     jackson:
         time-zone: UTC
         serialization:
-            WRITE_DATES_AS_TIMESTAMPS: false
+            WRITE_DATES_AS_TIMESTAMPS: false            
+    servlet:
+        multipart:
+            enabled: true
+            file-size-threshold: 2KB
+            max-file-size: 500MB
+            max-request-size: 515MB
         
 logging:
     level:
@@ -32,3 +38,6 @@ logging:
 app:
     jwtSecret: JWTSuperSecretKey
     jwtExpirationInMs: 604800000
+
+file:
+    upload-dir: /uploads
