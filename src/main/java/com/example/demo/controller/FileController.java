@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/file")
 public class FileController {
@@ -51,10 +52,10 @@ public class FileController {
     //     return new UploadFileResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
     // }
 
-    // @PostMapping("/loadFiles")
-    // public List<FileInfo> loadFiles() {
-    //     return fileStorageService.loadFiles();
-    // }
+    @PostMapping("/loadFiles")
+    public List<FileInfo> loadFiles() {
+        return fileStorageService.loadFiles();
+    }
 
     // @GetMapping("/deleteFile")
     // public UploadFileResponse deleteFile(@RequestParam(value = "fileName") String fileName) {
