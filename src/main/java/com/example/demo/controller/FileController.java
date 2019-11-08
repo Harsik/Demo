@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.AvatarFileInfo;
 // import com.example.demo.model.AvatarFileInfo;
 import com.example.demo.model.FileInfo;
 import com.example.demo.payload.UploadFileResponse;
@@ -35,22 +36,22 @@ public class FileController {
     @Autowired
     private AccountService accountService;
 
-    // @GetMapping("/loadAvatar")
-    // @PreAuthorize("hasRole('USER')")
-    // public AvatarFileInfo loadAvatar(@RequestParam(value = "email") String email) {
-    //     return accountService.loadAvatarByEmail(email);
-    // }
+    @GetMapping("/loadAvatar")
+    @PreAuthorize("hasRole('USER')")
+    public AvatarFileInfo loadAvatar(@RequestParam(value = "email") String email) {
+        return accountService.loadAvatarByEmail(email);
+    }
 
-    // @PostMapping("/uploadAvatar")
-    // public UploadFileResponse uploadAvatar(@RequestParam("file") MultipartFile file,
-    //         @RequestParam("email") String email) {
-    //     String fileName = fileStorageService.storeFile(file);
-    //     String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/file/downloadFile/")
-    //             .path(fileName).toUriString();
+    @PostMapping("/uploadAvatar")
+    public UploadFileResponse uploadAvatar(@RequestParam("file") MultipartFile file,
+            @RequestParam("email") String email) {
+        String fileName = fileStorageService.storeFile(file);
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/file/downloadFile/")
+                .path(fileName).toUriString();
 
-    //     accountService.saveAvatar(email, fileName, fileDownloadUri, file.getContentType(), file.getSize());
-    //     return new UploadFileResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
-    // }
+        accountService.saveAvatar(email, fileName, fileDownloadUri, file.getContentType(), file.getSize());
+        return new UploadFileResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
+    }
 
     @PostMapping("/loadFiles")
     public List<FileInfo> loadFiles() {

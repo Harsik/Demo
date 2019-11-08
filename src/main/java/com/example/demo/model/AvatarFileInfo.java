@@ -1,32 +1,29 @@
 package com.example.demo.model;
 
 import java.time.LocalDateTime;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.NoArgsConstructor;
+// import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@Table(name = "profiles")
-public class Profile {
+// @NoArgsConstructor
+public class AvatarFileInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 스프링 2.0이상 부터 GenerationType.AUTO에 문제가 있어 IDENTITY로 수정
@@ -34,19 +31,16 @@ public class Profile {
 
     private String name;
 
-    private String bio; // 간단한 자기소개
+    private String downloadUri;
 
-    private String company;
+    private String type;
 
-    private String address;
+    private Long size;
 
-    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "profile")
-    private AvatarFileInfo avatarFileInfo;
+    @JoinColumn(name = "profile_id", nullable = false)
+    @JsonIgnore
+    private Profile profile;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -54,10 +48,18 @@ public class Profile {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public Profile(String name, String bio, String company, String address) {
+    public AvatarFileInfo() {
+        this.name = "default";
+        this.downloadUri = "http://localhost:8080/api/file/downloadFile/512x512.png";
+        this.type = "image/png";
+        this.size = new Long("20001");
+    }
+
+    @Builder
+    public AvatarFileInfo(String name, String downloadUri, String type, Long size) {
         this.name = name;
-        this.bio = bio;
-        this.company = company;
-        this.address = address;
+        this.downloadUri = downloadUri;
+        this.type = type;
+        this.size = size;
     }
 }

@@ -9,9 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Account;
+import com.example.demo.model.AvatarFileInfo;
 import com.example.demo.model.Profile;
 import com.example.demo.payload.ProfilePayload;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.AvatarFileInfoRepository;
 import com.example.demo.repository.ProfileRepository;
 import com.example.demo.security.AccountPrincipal;
 
@@ -23,6 +25,9 @@ public class AccountService implements UserDetailsService {
 
         @Autowired
         private ProfileRepository profileRepository;
+        
+        @Autowired
+        private AvatarFileInfoRepository avatarFileInfoRepository;
 
         @Override
         @Transactional
@@ -77,4 +82,32 @@ public class AccountService implements UserDetailsService {
                 return profile;
         }
 
+        public AvatarFileInfo loadAvatarByEmail(String email) {
+                Account account = accountRepository.findByEmail(email).orElseThrow(
+                                () -> new UsernameNotFoundException("Account not found with email : " + email));
+                Profile profile = account.getProfile();
+                return avatarFileInfoRepository.findByProfileId(profile.getId())
+                                .orElseThrow(() -> new UsernameNotFoundException(
+                                                "avatarFileInfo not found with profile_id : " + profile.getId()));
+        }
+
+        public void saveAvatar(String email, String name, String downloadUri, String type, Long size) {
+                Account account = accountRepository.findByEmail(email).orElseThrow(
+                                () -> new UsernameNotFoundException("Account not found with email : " + email));
+                Profile profile = account.getProfile();
+                AvatarFileInfo avatarFileInfo = profile.getAvatarFileInfo(); // 여기서 null exception에 대해 적지 않았기에 nullpoint
+                                                                             // error 발생
+                if (avatarFileInfo != null) {
+                        avatarFileInfo.setName(name);
+                        avatarFileInfo.setDownloadUri(downloadUri);
+                        avatarFileInfo.setType(type);
+                        avatarFileInfo.setSize(size);
+                        avatarFileInfoRepository.save(avatarFileInfo);
+                } else {
+                        AvatarFileInfo newAvatar = new AvatarFileInfo(name, downloadUri, type, size);
+                        profile.setAvatarFileInfo(newAvatar);
+                        newAvatar.setProfile(profile);
+                        profileRepository.save(profile);
+                }
+        }
 }
